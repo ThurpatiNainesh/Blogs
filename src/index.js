@@ -21,23 +21,25 @@ mongoose
     }
   ).then(console.log("connected mongodb"))
    .catch((err) => console.log(err))
-// app.use("/",(req,res)=>{
-//     console.log("hey this is main url ")
-// })
-const storage = multer.diskStorage({
-  // file location
-  destination:(req,file,cb)=>{
-    cb(null,"hello.jpeg")
-  },
-  // file name we arte giving i9n req.body
-  filename:(req,file,cb)=>{
-    cb(null,req.body.name);
-  }
+app.use("/",(req,res)=>{
+    console.log("hey this is main url ")
 })
-const upload = multer({storage:storage});
-app.post("/api/upload",upload.single("file"),(req,res)=>{
-  res.status(200).json("file has be uploaded")
-})
+const upload = multer({
+  storage:multer.diskStorage({
+      destination:(req,file,cb)=>{
+          cb(null,'Images');
+      },
+      filename:(req,file,cb)=>{
+         console.log(file);
+         cb(null,file.fieldname+"-"+Date.now()+".jpg");
+      }
+  })
+}).single('user_file');
+
+app.post("/upload",upload,(req,res)=>{
+  res.send("Image Uploaded");
+});
+
 app.use("/api/auth",authRoute)
 app.use("/api/users",userRoute)
 app.use("/api/posts",postRoute)
